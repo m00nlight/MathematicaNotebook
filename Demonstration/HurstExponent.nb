@@ -1,0 +1,1223 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     51401,       1214]
+NotebookOptionsPosition[     47682,       1100]
+NotebookOutlinePosition[     49280,       1151]
+CellTagsIndexPosition[     48952,       1139]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Hurst Exponent of Stock Price", "DemoTitle",
+ CellChangeTimes->{{3.655085515038929*^9, 3.6550855210196753`*^9}}],
+
+Cell["", "InitializationSection"],
+
+Cell[CellGroupData[{
+
+Cell["", "ManipulateSection"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"HurstR", "[", "data_", "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "zs", "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"zs", " ", "=", " ", 
+         RowBox[{"Accumulate", "[", 
+          RowBox[{"data", " ", "-", " ", 
+           RowBox[{"Mean", "[", "data", "]"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Max", "[", "zs", "]"}], " ", "-", " ", 
+         RowBox[{"Min", "[", "zs", "]"}]}]}]}], "\[IndentingNewLine]", 
+      "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"HurstS", "[", "data_", "]"}], " ", ":=", " ", 
+     RowBox[{"StandardDeviation", "[", "data", "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"HurstRS", "[", "data_", "]"}], " ", ":=", " ", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Abs", "[", 
+         RowBox[{"HurstS", "[", "data", "]"}], "]"}], " ", "\[LessEqual]", 
+        " ", 
+        SuperscriptBox["10", 
+         RowBox[{"-", "6"}]]}], ",", " ", "1.0", ",", " ", 
+       RowBox[{
+        RowBox[{"HurstR", "[", "data", "]"}], " ", "/", " ", 
+        RowBox[{"HurstS", "[", "data", "]"}]}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"HurstExponent", "[", "data_", "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+        "n", ",", " ", "chunkSize", ",", " ", "tmp", ",", " ", "helper", ",", 
+         " ", "model", ",", " ", "ndata"}], "}"}], ",", " ", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"n", " ", "=", " ", 
+         RowBox[{"2", "^", 
+          RowBox[{"Round", "[", 
+           RowBox[{"Log", "[", 
+            RowBox[{"2", ",", " ", 
+             RowBox[{"Length", "[", "data", "]"}]}], "]"}], "]"}]}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"ndata", " ", "=", " ", 
+         RowBox[{"Drop", "[", 
+          RowBox[{"data", ",", 
+           RowBox[{
+            RowBox[{"Length", "[", "data", "]"}], " ", "-", " ", "n"}]}], 
+          "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"helper", " ", "=", " ", 
+         RowBox[{"Function", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"vs", ",", " ", "size"}], "}"}], ",", " ", 
+           RowBox[{"{", " ", 
+            RowBox[{
+             RowBox[{"Log", "[", 
+              RowBox[{"2.0", ",", " ", "size"}], "]"}], ",", " ", 
+             RowBox[{"Log", "[", 
+              RowBox[{"2.0", ",", " ", 
+               RowBox[{"Mean", "[", 
+                RowBox[{"Map", "[", 
+                 RowBox[{"HurstRS", ",", " ", 
+                  RowBox[{"Partition", "[", 
+                   RowBox[{"vs", ",", " ", "size"}], "]"}]}], "]"}], "]"}]}], 
+              "]"}]}], "}"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"chunkSize", " ", "=", " ", 
+         RowBox[{"NestWhileList", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"#", " ", "/", " ", "2"}], "&"}], ",", " ", "n", ",", " ", 
+           RowBox[{
+            RowBox[{"#", " ", ">=", "4"}], "&"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"tmp", " ", "=", " ", 
+         RowBox[{"Map", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"helper", "[", 
+             RowBox[{"ndata", ",", " ", "#"}], "]"}], "&"}], ",", " ", 
+           "chunkSize"}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"tmp", " ", "=", " ", 
+         RowBox[{"Take", "[", 
+          RowBox[{"tmp", ",", " ", 
+           RowBox[{
+            RowBox[{"Length", "[", "tmp", "]"}], " ", "-", " ", "1"}]}], 
+          "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"model", " ", "=", " ", 
+         RowBox[{"LinearModelFit", "[", 
+          RowBox[{"tmp", " ", ",", " ", "x", ",", " ", "x"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"Show", "[", 
+         RowBox[{
+          RowBox[{"ListPlot", "[", "tmp", "]"}], ",", " ", 
+          RowBox[{"Plot", "[", 
+           RowBox[{
+            RowBox[{"model", "[", "\"\<BestFit\>\"", "]"}], ",", " ", 
+            RowBox[{"{", 
+             RowBox[{"x", ",", " ", "0", ",", " ", "20"}], "}"}], ",", " ", 
+            RowBox[{"PlotLegends", "\[Rule]", " ", 
+             RowBox[{"Placed", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{"model", "[", "\"\<BestFit\>\"", "]"}], "}"}], ",", 
+               " ", "Above"}], "]"}]}]}], "]"}]}], "]"}]}]}], 
+      "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"companyMap", " ", "=", " ", 
+     RowBox[{"<|", " ", 
+      RowBox[{
+       RowBox[{"\"\<Apple\>\"", " ", "\[Rule]", " ", "\"\<NASDAQ:AAPL\>\""}], 
+       ",", " ", 
+       RowBox[{
+       "\"\<Google\>\"", " ", "\[Rule]", " ", "\"\<NASDAQ:GOOGL\>\""}], ",", 
+       " ", 
+       RowBox[{
+       "\"\<Microsoft\>\"", " ", "\[Rule]", " ", "\"\<NASDAQ:MSFT\>\""}], ",",
+        " ", 
+       RowBox[{"\"\<Baidu\>\"", " ", "\[Rule]", " ", "\"\<NASDAQ:BIDU\>\""}], 
+       ",", " ", 
+       RowBox[{"\"\<IBM\>\"", " ", "\[Rule]", " ", "\"\<NYSE:IBM\>\""}], ",", 
+       " ", 
+       RowBox[{"\"\<HP\>\"", "\[Rule]", " ", "\"\<NYSE:HP\>\""}]}], "|>"}]}], 
+    ";", "\[IndentingNewLine]", 
+    RowBox[{"pricesOrigin", " ", "=", " ", 
+     RowBox[{"FinancialData", "[", 
+      RowBox[{
+       RowBox[{"Lookup", "[", 
+        RowBox[{"companyMap", ",", " ", "company"}], "]"}], ",", " ", 
+       "\"\<Close\>\"", ",", " ", 
+       RowBox[{"{", 
+        RowBox[{"2006", ",", " ", "1", ",", " ", "1"}], "}"}]}], "]"}]}], ";",
+     "\[IndentingNewLine]", 
+    RowBox[{"prices", " ", "=", 
+     RowBox[{"Map", "[", 
+      RowBox[{"Last", ",", " ", "pricesOrigin"}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"tmpn", " ", "=", " ", 
+     RowBox[{"2", "^", 
+      RowBox[{"Round", "[", 
+       RowBox[{"Log", "[", 
+        RowBox[{"2", ",", " ", 
+         RowBox[{"Length", "[", "pricesOrigin", "]"}]}], "]"}], "]"}]}]}], 
+    ";", "\[IndentingNewLine]", 
+    RowBox[{"Grid", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"DateListPlot", "[", 
+          RowBox[{
+           RowBox[{"Drop", "[", 
+            RowBox[{"pricesOrigin", ",", " ", 
+             RowBox[{
+              RowBox[{"Length", "[", "pricesOrigin", "]"}], " ", "-", " ", 
+              "tmpn"}]}], "]"}], ",", " ", 
+           RowBox[{"PlotLabel", " ", "\[Rule]", " ", 
+            RowBox[{
+            "company", " ", "<>", " ", "\"\<'s\>\"", " ", "<>", " ", 
+             "\"\< stock prices\>\""}]}]}], "]"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"QuantilePlot", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"Drop", "[", 
+             RowBox[{"prices", ",", " ", "n"}], "]"}], " ", "-", " ", 
+            RowBox[{"Take", "[", 
+             RowBox[{"prices", ",", " ", 
+              RowBox[{
+               RowBox[{"Length", "[", "prices", "]"}], " ", "-", " ", "n"}]}],
+              "]"}]}], ",", " ", 
+           RowBox[{"PlotLabel", " ", "\[Rule]", " ", 
+            RowBox[{"\"\<Quantile Plot of \>\"", " ", "<>", " ", 
+             RowBox[{"ToString", "[", "n", "]"}], " ", "<>", " ", 
+             "\"\< days' earning\>\""}]}]}], "]"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"Histogram", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"Drop", "[", 
+             RowBox[{"prices", ",", " ", "n"}], "]"}], " ", "-", " ", 
+            RowBox[{"Take", "[", 
+             RowBox[{"prices", ",", " ", 
+              RowBox[{
+               RowBox[{"Length", "[", "prices", "]"}], " ", "-", " ", "n"}]}],
+              "]"}]}], ",", " ", 
+           RowBox[{"PlotLabel", " ", "\[Rule]", " ", 
+            RowBox[{"\"\<Histogram of \>\"", " ", "<>", " ", 
+             RowBox[{"ToString", "[", "n", "]"}], " ", "<>", " ", 
+             "\"\< days' earning\>\""}]}]}], "]"}], ",", 
+         RowBox[{"HurstExponent", "[", 
+          RowBox[{
+           RowBox[{"Drop", "[", 
+            RowBox[{"prices", ",", " ", "n"}], "]"}], " ", "-", " ", 
+           RowBox[{"Take", "[", 
+            RowBox[{"prices", ",", " ", 
+             RowBox[{
+              RowBox[{"Length", "[", "prices", "]"}], " ", "-", " ", "n"}]}], 
+            "]"}]}], "]"}]}], "}"}]}], "}"}], "]"}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{"company", ",", " ", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<Apple\>\"", ",", " ", "\"\<Microsoft\>\"", ",", " ", 
+       "\"\<Google\>\"", ",", " ", "\"\<Baidu\>\"", ",", " ", "\"\<IBM\>\"", 
+       ",", " ", "\"\<HP\>\""}], "}"}]}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{"n", ",", " ", "1", ",", " ", "30", ",", " ", "1"}], "}"}]}], 
+  "]"}]], "Input",
+ CellChangeTimes->{
+  3.655085524972331*^9, {3.6554103416455708`*^9, 3.65541036100317*^9}, {
+   3.6554103979270573`*^9, 3.6554104138678913`*^9}, {3.655410525770842*^9, 
+   3.6554107098007107`*^9}, {3.655410798465*^9, 3.655410803575984*^9}, {
+   3.6554109546603813`*^9, 3.655410966122122*^9}, {3.6554109977855587`*^9, 
+   3.655411134170897*^9}, {3.6554115407481203`*^9, 3.655411547859709*^9}, {
+   3.65541159583629*^9, 3.655411598865019*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`company$$ = "Apple", $CellContext`n$$ = 11, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{
+      Hold[$CellContext`company$$], {
+      "Apple", "Microsoft", "Google", "Baidu", "IBM", "HP"}}, {
+      Hold[$CellContext`n$$], 1, 30, 1}}, Typeset`size$$ = {
+    368., {140.3544921875, 145.6455078125}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`company$13093$$ = 0, $CellContext`n$13094$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`company$$ = "Apple", $CellContext`n$$ = 1},
+       "ControllerVariables" :> {
+        Hold[$CellContext`company$$, $CellContext`company$13093$$, 0], 
+        Hold[$CellContext`n$$, $CellContext`n$13094$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> ($CellContext`HurstR[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        Module[{$CellContext`zs}, $CellContext`zs = 
+           Accumulate[$CellContext`data - Mean[$CellContext`data]]; 
+          Max[$CellContext`zs] - Min[$CellContext`zs]]; $CellContext`HurstS[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        StandardDeviation[$CellContext`data]; $CellContext`HurstRS[
+          Pattern[$CellContext`data, 
+           Blank[]]] := If[Abs[
+            $CellContext`HurstS[$CellContext`data]] <= 10^(-6), 
+          1., $CellContext`HurstR[$CellContext`data]/$CellContext`HurstS[$\
+CellContext`data]]; $CellContext`HurstExponent[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        Module[{$CellContext`n, $CellContext`chunkSize, $CellContext`tmp, \
+$CellContext`helper, $CellContext`model, $CellContext`ndata}, $CellContext`n = 
+           2^Round[
+              Log[2, 
+               Length[$CellContext`data]]]; $CellContext`ndata = 
+           Drop[$CellContext`data, 
+             Length[$CellContext`data] - $CellContext`n]; $CellContext`helper = 
+           Function[{$CellContext`vs, $CellContext`size}, {
+              Log[2., $CellContext`size], 
+              Log[2., 
+               Mean[
+                Map[$CellContext`HurstRS, 
+                 
+                 Partition[$CellContext`vs, $CellContext`size]]]]}]; \
+$CellContext`chunkSize = 
+           NestWhileList[#/2& , $CellContext`n, # >= 4& ]; $CellContext`tmp = 
+           Map[$CellContext`helper[$CellContext`ndata, #]& , \
+$CellContext`chunkSize]; $CellContext`tmp = 
+           Take[$CellContext`tmp, Length[$CellContext`tmp] - 
+             1]; $CellContext`model = 
+           LinearModelFit[$CellContext`tmp, $CellContext`x, $CellContext`x]; 
+          Show[
+            ListPlot[$CellContext`tmp], 
+            Plot[
+             $CellContext`model["BestFit"], {$CellContext`x, 0, 20}, 
+             PlotLegends -> Placed[{
+                $CellContext`model["BestFit"]}, 
+               Above]]]]; $CellContext`companyMap = 
+        Association[
+         "Apple" -> "NASDAQ:AAPL", "Google" -> "NASDAQ:GOOGL", "Microsoft" -> 
+          "NASDAQ:MSFT", "Baidu" -> "NASDAQ:BIDU", "IBM" -> "NYSE:IBM", "HP" -> 
+          "NYSE:HP"]; $CellContext`pricesOrigin = FinancialData[
+          Lookup[$CellContext`companyMap, $CellContext`company$$], "Close", {
+          2006, 1, 1}]; $CellContext`prices = 
+        Map[Last, $CellContext`pricesOrigin]; $CellContext`tmpn = 2^Round[
+           Log[2, 
+            Length[$CellContext`pricesOrigin]]]; Grid[{{
+           DateListPlot[
+            
+            Drop[$CellContext`pricesOrigin, 
+             Length[$CellContext`pricesOrigin] - $CellContext`tmpn], 
+            PlotLabel -> 
+            StringJoin[$CellContext`company$$, "'s", " stock prices"]], 
+           QuantilePlot[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$], PlotLabel -> 
+            StringJoin["Quantile Plot of ", 
+              ToString[$CellContext`n$$], " days' earning"]]}, {
+           Histogram[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$], PlotLabel -> 
+            StringJoin["Histogram of ", 
+              ToString[$CellContext`n$$], " days' earning"]], 
+           $CellContext`HurstExponent[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$]]}}]), 
+      "Specifications" :> {{$CellContext`company$$, {
+         "Apple", "Microsoft", "Google", "Baidu", "IBM", 
+          "HP"}}, {$CellContext`n$$, 1, 30, 1}}, "Options" :> {}, 
+      "DefaultOptions" :> {ControllerLinking -> True}],
+     ImageSizeCache->{411., {198., 203.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{3.655411608035081*^9, 3.6554121319653597`*^9},
+ CellID->1903439444]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "ManipulateCaptionSection"],
+
+Cell["\<\
+Hurst Exponent is used as a measure of long-term memory of time series[1]. \
+For Hurst Exponent, 0.5 means white noise(no memory for the time series or \
+more techniquely random walk). The large the value, the more indication the \
+time series has some type of memory.  \
+\>", "ManipulateCaption",
+ CellChangeTimes->{{3.655085535270109*^9, 3.6550855562628307`*^9}, {
+  3.65537393572528*^9, 3.6553740991848907`*^9}, {3.655409630734611*^9, 
+  3.655409635967754*^9}}],
+
+Cell["", "ManipulateCaption",
+ CellChangeTimes->{{3.655085535270109*^9, 3.6550855562628307`*^9}, {
+  3.65537393572528*^9, 3.6553740991848907`*^9}, {3.655409630734611*^9, 
+  3.655409642337433*^9}},
+ CellID->1179027830],
+
+Cell["\<\
+This demonstration show how to use Rescale Range[2] to calculate the Hurst \
+Exponent of stock price to show that n(n>=1) days earning tend to have \
+long-term memory. And the large the n the more long-term memory it shows.  \
+\>", "ManipulateCaption",
+ CellChangeTimes->{{3.655085535270109*^9, 3.6550855562628307`*^9}, {
+  3.65537393572528*^9, 3.6553740991848907`*^9}, {3.655409630734611*^9, 
+  3.655409652641184*^9}, {3.655410214821957*^9, 3.655410305741992*^9}, {
+  3.6554111693590107`*^9, 3.655411180692628*^9}},
+ CellID->1044775643]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "ThumbnailSection"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`company$$ = "HP", $CellContext`n$$ = 1, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{
+      Hold[$CellContext`company$$], {
+      "Apple", "Microsoft", "Google", "Baidu", "IBM", "HP"}}, {
+      Hold[$CellContext`n$$], 1, 30, 1}}, Typeset`size$$ = {
+    368., {140.3544921875, 145.6455078125}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`company$11897029$$ = 0, $CellContext`n$11897030$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`company$$ = "Apple", $CellContext`n$$ = 1},
+       "ControllerVariables" :> {
+        Hold[$CellContext`company$$, $CellContext`company$11897029$$, 0], 
+        Hold[$CellContext`n$$, $CellContext`n$11897030$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> ($CellContext`HurstR[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        Module[{$CellContext`zs}, $CellContext`zs = 
+           Accumulate[$CellContext`data - Mean[$CellContext`data]]; 
+          Max[$CellContext`zs] - Min[$CellContext`zs]]; $CellContext`HurstS[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        StandardDeviation[$CellContext`data]; $CellContext`HurstRS[
+          Pattern[$CellContext`data, 
+           Blank[]]] := If[Abs[
+            $CellContext`HurstS[$CellContext`data]] <= 10^(-6), 
+          1., $CellContext`HurstR[$CellContext`data]/$CellContext`HurstS[$\
+CellContext`data]]; $CellContext`HurstExponent[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        Module[{$CellContext`n, $CellContext`chunkSize, $CellContext`tmp, \
+$CellContext`helper, $CellContext`model, $CellContext`ndata}, $CellContext`n = 
+           2^Round[
+              Log[2, 
+               Length[$CellContext`data]]]; $CellContext`ndata = 
+           Drop[$CellContext`data, 
+             Length[$CellContext`data] - $CellContext`n]; $CellContext`helper = 
+           Function[{$CellContext`vs, $CellContext`size}, {
+              Log[2., $CellContext`size], 
+              Log[2., 
+               Mean[
+                Map[$CellContext`HurstRS, 
+                 
+                 Partition[$CellContext`vs, $CellContext`size]]]]}]; \
+$CellContext`chunkSize = 
+           NestWhileList[#/2& , $CellContext`n, # >= 4& ]; $CellContext`tmp = 
+           Map[$CellContext`helper[$CellContext`ndata, #]& , \
+$CellContext`chunkSize]; $CellContext`tmp = 
+           Take[$CellContext`tmp, Length[$CellContext`tmp] - 
+             1]; $CellContext`model = 
+           LinearModelFit[$CellContext`tmp, $CellContext`x, $CellContext`x]; 
+          Show[
+            ListPlot[$CellContext`tmp], 
+            Plot[
+             $CellContext`model["BestFit"], {$CellContext`x, 0, 20}, 
+             PlotLegends -> Placed[{
+                $CellContext`model["BestFit"]}, 
+               Above]]]]; $CellContext`companyMap = 
+        Association[
+         "Apple" -> "NASDAQ:AAPL", "Google" -> "NASDAQ:GOOGL", "Microsoft" -> 
+          "NASDAQ:MSFT", "Baidu" -> "NASDAQ:BIDU", "IBM" -> "NYSE:IBM", "HP" -> 
+          "NYSE:HP"]; $CellContext`pricesOrigin = FinancialData[
+          Lookup[$CellContext`companyMap, $CellContext`company$$], "Close", {
+          2006, 1, 1}]; $CellContext`prices = 
+        Map[Last, $CellContext`pricesOrigin]; $CellContext`tmpn = 2^Round[
+           Log[2, 
+            Length[$CellContext`pricesOrigin]]]; Grid[{{
+           DateListPlot[
+            
+            Drop[$CellContext`pricesOrigin, 
+             Length[$CellContext`pricesOrigin] - $CellContext`tmpn], 
+            PlotLabel -> 
+            StringJoin[$CellContext`company$$, "'s", " stock prices"]], 
+           QuantilePlot[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$], PlotLabel -> 
+            StringJoin["Quantile Plot of ", 
+              ToString[$CellContext`n$$], " days' earning"]]}, {
+           Histogram[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$], PlotLabel -> 
+            StringJoin["Histogram of ", 
+              ToString[$CellContext`n$$], " days' earning"]], 
+           $CellContext`HurstExponent[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$]]}}]), 
+      "Specifications" :> {{$CellContext`company$$, {
+         "Apple", "Microsoft", "Google", "Baidu", "IBM", 
+          "HP"}}, {$CellContext`n$$, 1, 30, 1}}, "Options" :> {}, 
+      "DefaultOptions" :> {ControllerLinking -> True}],
+     ImageSizeCache->{411., {198., 203.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{3.655411608035081*^9},
+ CellID->1013234712]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "SnapshotsSection"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`company$$ = "Apple", $CellContext`n$$ = 1, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{
+      Hold[$CellContext`company$$], {
+      "Apple", "Microsoft", "Google", "Baidu", "IBM", "HP"}}, {
+      Hold[$CellContext`n$$], 1, 30, 1}}, Typeset`size$$ = {
+    368., {140.3544921875, 145.6455078125}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`company$9872653$$ = 0, $CellContext`n$9872654$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`company$$ = "Apple", $CellContext`n$$ = 1},
+       "ControllerVariables" :> {
+        Hold[$CellContext`company$$, $CellContext`company$9872653$$, 0], 
+        Hold[$CellContext`n$$, $CellContext`n$9872654$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> ($CellContext`HurstR[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        Module[{$CellContext`zs}, $CellContext`zs = 
+           Accumulate[$CellContext`data - Mean[$CellContext`data]]; 
+          Max[$CellContext`zs] - Min[$CellContext`zs]]; $CellContext`HurstS[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        StandardDeviation[$CellContext`data]; $CellContext`HurstRS[
+          Pattern[$CellContext`data, 
+           Blank[]]] := If[Abs[
+            $CellContext`HurstS[$CellContext`data]] <= 10^(-6), 
+          1., $CellContext`HurstR[$CellContext`data]/$CellContext`HurstS[$\
+CellContext`data]]; $CellContext`HurstExponent[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        Module[{$CellContext`n, $CellContext`chunkSize, $CellContext`tmp, \
+$CellContext`helper, $CellContext`model, $CellContext`ndata}, $CellContext`n = 
+           2^Round[
+              Log[2, 
+               Length[$CellContext`data]]]; $CellContext`ndata = 
+           Drop[$CellContext`data, 
+             Length[$CellContext`data] - $CellContext`n]; $CellContext`helper = 
+           Function[{$CellContext`vs, $CellContext`size}, {
+              Log[2., $CellContext`size], 
+              Log[2., 
+               Mean[
+                Map[$CellContext`HurstRS, 
+                 
+                 Partition[$CellContext`vs, $CellContext`size]]]]}]; \
+$CellContext`chunkSize = 
+           NestWhileList[#/2& , $CellContext`n, # >= 4& ]; $CellContext`tmp = 
+           Map[$CellContext`helper[$CellContext`ndata, #]& , \
+$CellContext`chunkSize]; $CellContext`tmp = 
+           Take[$CellContext`tmp, Length[$CellContext`tmp] - 
+             1]; $CellContext`model = 
+           LinearModelFit[$CellContext`tmp, $CellContext`x, $CellContext`x]; 
+          Show[
+            ListPlot[$CellContext`tmp], 
+            Plot[
+             $CellContext`model["BestFit"], {$CellContext`x, 0, 20}, 
+             PlotLegends -> Placed[{
+                $CellContext`model["BestFit"]}, 
+               Above]]]]; $CellContext`companyMap = 
+        Association[
+         "Apple" -> "NASDAQ:AAPL", "Google" -> "NASDAQ:GOOG", "Microsoft" -> 
+          "NASDAQ:MSFT", "Baidu" -> "NASDAQ:BIDU", "IBM" -> "NYSE:IBM", "HP" -> 
+          "NYSE:HP"]; $CellContext`pricesOrigin = FinancialData[
+          Lookup[$CellContext`companyMap, $CellContext`company$$], "Close", {
+          2006, 1, 1}]; $CellContext`prices = 
+        Map[Last, $CellContext`pricesOrigin]; $CellContext`tmpn = 2^Round[
+           Log[2, 
+            Length[$CellContext`pricesOrigin]]]; Grid[{{
+           DateListPlot[
+            
+            Drop[$CellContext`pricesOrigin, 
+             Length[$CellContext`pricesOrigin] - $CellContext`tmpn], 
+            PlotLabel -> 
+            StringJoin[$CellContext`company$$, "'s", " stock prices"]], 
+           QuantilePlot[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$], PlotLabel -> 
+            StringJoin["Quantile Plot of ", 
+              ToString[$CellContext`n$$], " days' earning"]]}, {
+           Histogram[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$], PlotLabel -> 
+            StringJoin["Histogram of ", 
+              ToString[$CellContext`n$$], " days' earning"]], 
+           $CellContext`HurstExponent[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$]]}}]), 
+      "Specifications" :> {{$CellContext`company$$, {
+         "Apple", "Microsoft", "Google", "Baidu", "IBM", 
+          "HP"}}, {$CellContext`n$$, 1, 30, 1}}, "Options" :> {}, 
+      "DefaultOptions" :> {ControllerLinking -> True}],
+     ImageSizeCache->{411., {198., 203.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{3.6554107212436647`*^9, 3.6554109734005327`*^9, 
+  3.6554110536830683`*^9, 3.655411107530592*^9, 3.6554111393433313`*^9},
+ CellID->587201596],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`company$$ = "Apple", $CellContext`n$$ = 12, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{
+      Hold[$CellContext`company$$], {
+      "Apple", "Microsoft", "Google", "Baidu", "IBM", "HP"}}, {
+      Hold[$CellContext`n$$], 1, 30, 1}}, Typeset`size$$ = {
+    368., {142.3544921875, 147.6455078125}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`company$9872653$$ = 0, $CellContext`n$9872654$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`company$$ = "Apple", $CellContext`n$$ = 1},
+       "ControllerVariables" :> {
+        Hold[$CellContext`company$$, $CellContext`company$9872653$$, 0], 
+        Hold[$CellContext`n$$, $CellContext`n$9872654$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> ($CellContext`HurstR[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        Module[{$CellContext`zs}, $CellContext`zs = 
+           Accumulate[$CellContext`data - Mean[$CellContext`data]]; 
+          Max[$CellContext`zs] - Min[$CellContext`zs]]; $CellContext`HurstS[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        StandardDeviation[$CellContext`data]; $CellContext`HurstRS[
+          Pattern[$CellContext`data, 
+           Blank[]]] := If[Abs[
+            $CellContext`HurstS[$CellContext`data]] <= 10^(-6), 
+          1., $CellContext`HurstR[$CellContext`data]/$CellContext`HurstS[$\
+CellContext`data]]; $CellContext`HurstExponent[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        Module[{$CellContext`n, $CellContext`chunkSize, $CellContext`tmp, \
+$CellContext`helper, $CellContext`model, $CellContext`ndata}, $CellContext`n = 
+           2^Round[
+              Log[2, 
+               Length[$CellContext`data]]]; $CellContext`ndata = 
+           Drop[$CellContext`data, 
+             Length[$CellContext`data] - $CellContext`n]; $CellContext`helper = 
+           Function[{$CellContext`vs, $CellContext`size}, {
+              Log[2., $CellContext`size], 
+              Log[2., 
+               Mean[
+                Map[$CellContext`HurstRS, 
+                 
+                 Partition[$CellContext`vs, $CellContext`size]]]]}]; \
+$CellContext`chunkSize = 
+           NestWhileList[#/2& , $CellContext`n, # >= 4& ]; $CellContext`tmp = 
+           Map[$CellContext`helper[$CellContext`ndata, #]& , \
+$CellContext`chunkSize]; $CellContext`tmp = 
+           Take[$CellContext`tmp, Length[$CellContext`tmp] - 
+             1]; $CellContext`model = 
+           LinearModelFit[$CellContext`tmp, $CellContext`x, $CellContext`x]; 
+          Show[
+            ListPlot[$CellContext`tmp], 
+            Plot[
+             $CellContext`model["BestFit"], {$CellContext`x, 0, 20}, 
+             PlotLegends -> Placed[{
+                $CellContext`model["BestFit"]}, 
+               Above]]]]; $CellContext`companyMap = 
+        Association[
+         "Apple" -> "NASDAQ:AAPL", "Google" -> "NASDAQ:GOOG", "Microsoft" -> 
+          "NASDAQ:MSFT", "Baidu" -> "NASDAQ:BIDU", "IBM" -> "NYSE:IBM", "HP" -> 
+          "NYSE:HP"]; $CellContext`pricesOrigin = FinancialData[
+          Lookup[$CellContext`companyMap, $CellContext`company$$], "Close", {
+          2006, 1, 1}]; $CellContext`prices = 
+        Map[Last, $CellContext`pricesOrigin]; $CellContext`tmpn = 2^Round[
+           Log[2, 
+            Length[$CellContext`pricesOrigin]]]; Grid[{{
+           DateListPlot[
+            
+            Drop[$CellContext`pricesOrigin, 
+             Length[$CellContext`pricesOrigin] - $CellContext`tmpn], 
+            PlotLabel -> 
+            StringJoin[$CellContext`company$$, "'s", " stock prices"]], 
+           QuantilePlot[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$], PlotLabel -> 
+            StringJoin["Quantile Plot of ", 
+              ToString[$CellContext`n$$], " days' earning"]]}, {
+           Histogram[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$], PlotLabel -> 
+            StringJoin["Histogram of ", 
+              ToString[$CellContext`n$$], " days' earning"]], 
+           $CellContext`HurstExponent[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$]]}}]), 
+      "Specifications" :> {{$CellContext`company$$, {
+         "Apple", "Microsoft", "Google", "Baidu", "IBM", 
+          "HP"}}, {$CellContext`n$$, 1, 30, 1}}, "Options" :> {}, 
+      "DefaultOptions" :> {ControllerLinking -> True}],
+     ImageSizeCache->{411., {200., 205.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{3.6554107212436647`*^9, 3.6554109734005327`*^9, 
+  3.6554110536830683`*^9, 3.655411107530592*^9, 3.6554111393433313`*^9},
+ CellID->1409866007],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`company$$ = "Baidu", $CellContext`n$$ = 12, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{
+      Hold[$CellContext`company$$], {
+      "Apple", "Microsoft", "Google", "Baidu", "IBM", "HP"}}, {
+      Hold[$CellContext`n$$], 1, 30, 1}}, Typeset`size$$ = {
+    368., {139.8544921875, 145.1455078125}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`company$11897029$$ = 0, $CellContext`n$11897030$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`company$$ = "Apple", $CellContext`n$$ = 1},
+       "ControllerVariables" :> {
+        Hold[$CellContext`company$$, $CellContext`company$11897029$$, 0], 
+        Hold[$CellContext`n$$, $CellContext`n$11897030$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> ($CellContext`HurstR[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        Module[{$CellContext`zs}, $CellContext`zs = 
+           Accumulate[$CellContext`data - Mean[$CellContext`data]]; 
+          Max[$CellContext`zs] - Min[$CellContext`zs]]; $CellContext`HurstS[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        StandardDeviation[$CellContext`data]; $CellContext`HurstRS[
+          Pattern[$CellContext`data, 
+           Blank[]]] := If[Abs[
+            $CellContext`HurstS[$CellContext`data]] <= 10^(-6), 
+          1., $CellContext`HurstR[$CellContext`data]/$CellContext`HurstS[$\
+CellContext`data]]; $CellContext`HurstExponent[
+          Pattern[$CellContext`data, 
+           Blank[]]] := 
+        Module[{$CellContext`n, $CellContext`chunkSize, $CellContext`tmp, \
+$CellContext`helper, $CellContext`model, $CellContext`ndata}, $CellContext`n = 
+           2^Round[
+              Log[2, 
+               Length[$CellContext`data]]]; $CellContext`ndata = 
+           Drop[$CellContext`data, 
+             Length[$CellContext`data] - $CellContext`n]; $CellContext`helper = 
+           Function[{$CellContext`vs, $CellContext`size}, {
+              Log[2., $CellContext`size], 
+              Log[2., 
+               Mean[
+                Map[$CellContext`HurstRS, 
+                 
+                 Partition[$CellContext`vs, $CellContext`size]]]]}]; \
+$CellContext`chunkSize = 
+           NestWhileList[#/2& , $CellContext`n, # >= 4& ]; $CellContext`tmp = 
+           Map[$CellContext`helper[$CellContext`ndata, #]& , \
+$CellContext`chunkSize]; $CellContext`tmp = 
+           Take[$CellContext`tmp, Length[$CellContext`tmp] - 
+             1]; $CellContext`model = 
+           LinearModelFit[$CellContext`tmp, $CellContext`x, $CellContext`x]; 
+          Show[
+            ListPlot[$CellContext`tmp], 
+            Plot[
+             $CellContext`model["BestFit"], {$CellContext`x, 0, 20}, 
+             PlotLegends -> Placed[{
+                $CellContext`model["BestFit"]}, 
+               Above]]]]; $CellContext`companyMap = 
+        Association[
+         "Apple" -> "NASDAQ:AAPL", "Google" -> "NASDAQ:GOOGL", "Microsoft" -> 
+          "NASDAQ:MSFT", "Baidu" -> "NASDAQ:BIDU", "IBM" -> "NYSE:IBM", "HP" -> 
+          "NYSE:HP"]; $CellContext`pricesOrigin = FinancialData[
+          Lookup[$CellContext`companyMap, $CellContext`company$$], "Close", {
+          2006, 1, 1}]; $CellContext`prices = 
+        Map[Last, $CellContext`pricesOrigin]; $CellContext`tmpn = 2^Round[
+           Log[2, 
+            Length[$CellContext`pricesOrigin]]]; Grid[{{
+           DateListPlot[
+            
+            Drop[$CellContext`pricesOrigin, 
+             Length[$CellContext`pricesOrigin] - $CellContext`tmpn], 
+            PlotLabel -> 
+            StringJoin[$CellContext`company$$, "'s", " stock prices"]], 
+           QuantilePlot[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$], PlotLabel -> 
+            StringJoin["Quantile Plot of ", 
+              ToString[$CellContext`n$$], " days' earning"]]}, {
+           Histogram[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$], PlotLabel -> 
+            StringJoin["Histogram of ", 
+              ToString[$CellContext`n$$], " days' earning"]], 
+           $CellContext`HurstExponent[
+           Drop[$CellContext`prices, $CellContext`n$$] - 
+            Take[$CellContext`prices, 
+             Length[$CellContext`prices] - $CellContext`n$$]]}}]), 
+      "Specifications" :> {{$CellContext`company$$, {
+         "Apple", "Microsoft", "Google", "Baidu", "IBM", 
+          "HP"}}, {$CellContext`n$$, 1, 30, 1}}, "Options" :> {}, 
+      "DefaultOptions" :> {ControllerLinking -> True}],
+     ImageSizeCache->{411., {197., 202.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{3.655411608035081*^9},
+ CellID->72322195]
+}, Open  ]],
+
+Cell["", "DetailsSection"],
+
+Cell[CellGroupData[{
+
+Cell["", "ControlSuggestionsSection"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[True], Cell[" Resize Images"]}],
+  "\"Click inside an image to reveal its orange resize frame.\\nDrag any of \
+the orange resize handles to resize the image.\"",
+  TooltipDelay->0.35]], "ControlSuggestions",
+ CellChangeTimes->{3.655087052726386*^9},
+ FontFamily->"Verdana",
+ CellTags->"ResizeImages"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[" Rotate and Zoom in 3D"]}],
+  RowBox[{
+   "\"Drag a 3D graphic to rotate it. Starting the drag near the center \
+tumbles\\nthe graphic; starting near a corner turns it parallel to the plane \
+of the screen.\\nHold down \"", 
+    FrameBox[
+    "Ctrl", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], "\" (or \"", 
+    FrameBox[
+    "Cmd", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], "\" on Mac) and drag up and down to zoom.\""}],
+  TooltipDelay->0.35]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->"RotateAndZoomIn3D"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[" Drag Locators"]}],
+  RowBox[{"\"Drag any locator (\"", 
+    GraphicsBox[
+     LocatorBox[
+      Scaled[{0.5, 0.5}]], ImageSize -> 20], 
+    "\", etc.) to move it around.\""}],
+  TooltipDelay->0.35]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->"DragLocators"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[" Create and Delete Locators"]}],
+  RowBox[{"\"Insert a new locator in the graphic by holding down the \"", 
+    FrameBox[
+    "Alt", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], 
+    "\" key\\nand clicking where you want it to be. Delete a locator by \
+clicking it\\nwhile holding down the \"", 
+    FrameBox[
+    "Alt", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], "\" key.\""}],
+  TooltipDelay->0.35]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->"CreateAndDeleteLocators"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[" Slider Zoom"]}],
+  RowBox[{"\"Hold down the \"", 
+    FrameBox[
+    "Alt", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], 
+    "\" key while moving a slider to make fine adjustments in the slider \
+value.\\nHold \"", 
+    FrameBox[
+    "Ctrl", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], "\" and/or \"", 
+    FrameBox[
+    "Shift", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], "\" at the same time as \"", 
+    FrameBox[
+    "Alt", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], "\" to make ever finer adjustments.\""}],
+  TooltipDelay->0.35]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->"SliderZoom"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[True], Cell[" Gamepad Controls"]}],
+  "\"Control this Demonstration with a gamepad or other\\nhuman interface \
+device connected to your computer.\"",
+  TooltipDelay->0.35]], "ControlSuggestions",
+ CellChangeTimes->{3.35696210375764*^9, 3.3895522232313623`*^9, 
+  3.6550870616603537`*^9},
+ FontFamily->"Verdana",
+ CellTags->"GamepadControls"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[" Automatic Animation"]}],
+  RowBox[{"\"Animate a slider in this Demonstration by clicking the\"", 
+    AdjustmentBox[
+     Cell[
+      GraphicsData[
+      "CompressedBitmap", 
+       "eJzzTSzJSM1NLMlMTlRwL0osyMhMLlZwyy8CCjEzMjAwcIKwAgOI/R/IhBKc\n\
+/4EAyGAG0f+nTZsGwgysIJIRKsWKLAXGIHFmEpUgLADxWUAkI24jZs+eTaEt\n\
+IG+wQKRmzJgBlYf5lhEA30OqWA=="], "Graphics", ImageSize -> {9, 9}, ImageMargins -> 
+      0, CellBaseline -> Baseline], BoxBaselineShift -> 0.1839080459770115, 
+     BoxMargins -> {{0., 0.}, {-0.1839080459770115, 0.1839080459770115}}], 
+    "\"button\\nnext to the slider, and then clicking the play button that \
+appears.\\nAnimate all controls by selecting \"", 
+    StyleBox["Autorun", FontWeight -> "Bold"], "\" from the\"", 
+    AdjustmentBox[
+     Cell[
+      GraphicsData[
+      "CompressedBitmap", 
+       "eJyNULENwyAQfEySIlMwTVJlCGRFsosokeNtqBmDBagoaZjAI1C8/8GUUUC6\n\
+57h7cQ8PvU7Pl17nUav7oj/TPH7V7b2QJAUAXBkKmCPRowxICy64bRvGGNF7\n\
+X8CctGoDSN4xhIDGGDhzFXwUh3/ClBKrDQPmnGXtI6u0OOd+tZBVUqy1xSaH\n\
+UqiK6pPe4XdEdAz6563tx/gejuORGMxJaz8mdpJn7hc="], "Graphics", 
+      ImageSize -> {10, 10}, ImageMargins -> 0, CellBaseline -> Baseline], 
+     BoxBaselineShift -> 0.1839080459770115, 
+     BoxMargins -> {{0., 0.}, {-0.1839080459770115, 0.1839080459770115}}], 
+    "\"menu.\""}],
+  TooltipDelay->0.35]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->"AutomaticAnimation"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[" Bookmark Animation"]}],
+  RowBox[{
+   "\"See a prepared animation of this Demonstration by selecting\\n\"", 
+    StyleBox["Animate Bookmarks", FontWeight -> "Bold"], "\" from the\"", 
+    AdjustmentBox[
+     Cell[
+      GraphicsData[
+      "CompressedBitmap", 
+       "eJyNULENwyAQfEySIlMwTVJlCGRFsosokeNtqBmDBagoaZjAI1C8/8GUUUC6\n\
+57h7cQ8PvU7Pl17nUav7oj/TPH7V7b2QJAUAXBkKmCPRowxICy64bRvGGNF7\n\
+X8CctGoDSN4xhIDGGDhzFXwUh3/ClBKrDQPmnGXtI6u0OOd+tZBVUqy1xSaH\n\
+UqiK6pPe4XdEdAz6563tx/gejuORGMxJaz8mdpJn7hc="], "Graphics", 
+      ImageSize -> {10, 10}, ImageMargins -> 0, CellBaseline -> Baseline], 
+     BoxBaselineShift -> 0.1839080459770115, 
+     BoxMargins -> {{0., 0.}, {-0.1839080459770115, 0.1839080459770115}}], 
+    "\"menu.\""}],
+  TooltipDelay->0.35]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->"BookmarkAnimation"]
+}, Open  ]],
+
+Cell["", "SearchTermsSection"],
+
+Cell[CellGroupData[{
+
+Cell["", "RelatedLinksSection"],
+
+Cell[TextData[{
+ "[1] Wikipedia, ",
+ ButtonBox["Hurst exponent",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://en.wikipedia.org/wiki/Hurst_exponent"], None},
+  ButtonNote->"https://en.wikipedia.org/wiki/Hurst_exponent"],
+ "."
+}], "RelatedLinks",
+ CellChangeTimes->{{3.6553738565217323`*^9, 3.655373857659886*^9}, 
+   3.6554096195351753`*^9, {3.655409868515552*^9, 3.655409868521611*^9}},
+ CellID->1789843910],
+
+Cell[TextData[{
+ "[2] Wikipedia, ",
+ Cell[BoxData[
+  TagBox[
+   ButtonBox[
+    PaneSelectorBox[{False->"\<\"Rscale Range\"\>", True->
+     StyleBox["\<\"Rscale Range\"\>", "HyperlinkActive"]}, Dynamic[
+      CurrentValue["MouseOver"]],
+     BaseStyle->{"Hyperlink"},
+     FrameMargins->0,
+     ImageSize->Automatic],
+    BaseStyle->"Hyperlink",
+    ButtonData->{
+      URL["https://en.wikipedia.org/wiki/Rescaled_range"], None},
+    ButtonNote->"https://en.wikipedia.org/wiki/Rescaled_range"],
+   Annotation[#, "https://en.wikipedia.org/wiki/Rescaled_range", 
+    "Hyperlink"]& ]],
+  CellChangeTimes->{3.6554101867100773`*^9}]
+}], "RelatedLinks",
+ CellChangeTimes->{{3.6553738565217323`*^9, 3.655373857659886*^9}, 
+   3.6554096195351753`*^9, {3.655409868515552*^9, 3.655409879454957*^9}, {
+   3.655409918628335*^9, 3.6554099270562487`*^9}, {3.6554101138436728`*^9, 
+   3.6554101531598797`*^9}, 3.655410195661125*^9},
+ CellID->1762906003]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "AuthorSection"],
+
+Cell["Contributed by: Yushi Wang <dot.wangyushi@gmail.com>", "Author",
+ CellChangeTimes->{{3.655086090212953*^9, 3.655086095120942*^9}, {
+  3.655373826964151*^9, 3.6553738280868998`*^9}, {3.655373909962976*^9, 
+  3.655373911308456*^9}}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{700, Automatic},
+WindowMargins->{{10, Automatic}, {0, 0}},
+FrontEndVersion->"10.1 for Mac OS X x86 (32-bit, 64-bit Kernel) (March 23, \
+2015)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "Demonstration.nb", 
+  CharacterEncoding -> "UTF-8"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "ResizeImages"->{
+  Cell[40248, 893, 353, 9, 29, "ControlSuggestions",
+   CellTags->"ResizeImages"]},
+ "RotateAndZoomIn3D"->{
+  Cell[40604, 904, 678, 16, 29, "ControlSuggestions",
+   CellTags->"RotateAndZoomIn3D"]},
+ "DragLocators"->{
+  Cell[41285, 922, 340, 11, 29, "ControlSuggestions",
+   CellTags->"DragLocators"]},
+ "CreateAndDeleteLocators"->{
+  Cell[41628, 935, 637, 15, 29, "ControlSuggestions",
+   CellTags->"CreateAndDeleteLocators"]},
+ "SliderZoom"->{
+  Cell[42268, 952, 844, 21, 29, "ControlSuggestions",
+   CellTags->"SliderZoom"]},
+ "GamepadControls"->{
+  Cell[43115, 975, 395, 10, 29, "ControlSuggestions",
+   CellTags->"GamepadControls"]},
+ "AutomaticAnimation"->{
+  Cell[43513, 987, 1464, 31, 29, "ControlSuggestions",
+   CellTags->"AutomaticAnimation"]},
+ "BookmarkAnimation"->{
+  Cell[44980, 1020, 908, 21, 29, "ControlSuggestions",
+   CellTags->"BookmarkAnimation"]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"ResizeImages", 48059, 1112},
+ {"RotateAndZoomIn3D", 48167, 1115},
+ {"DragLocators", 48276, 1118},
+ {"CreateAndDeleteLocators", 48391, 1121},
+ {"SliderZoom", 48504, 1124},
+ {"GamepadControls", 48609, 1127},
+ {"AutomaticAnimation", 48722, 1130},
+ {"BookmarkAnimation", 48838, 1133}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 118, 1, 76, "DemoTitle"],
+Cell[701, 25, 33, 0, 275, "InitializationSection"],
+Cell[CellGroupData[{
+Cell[759, 29, 29, 0, 201, "ManipulateSection"],
+Cell[CellGroupData[{
+Cell[813, 33, 9360, 226, 614, "Input"],
+Cell[10176, 261, 5672, 114, 471, "Output",
+ CellID->1903439444]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15897, 381, 36, 0, 181, "ManipulateCaptionSection"],
+Cell[15936, 383, 474, 8, 55, "ManipulateCaption"],
+Cell[16413, 393, 217, 4, 23, "ManipulateCaption",
+ CellID->1179027830],
+Cell[16633, 399, 547, 9, 55, "ManipulateCaption",
+ CellID->1044775643]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17217, 413, 28, 0, 179, "ThumbnailSection"],
+Cell[17248, 415, 5656, 114, 413, "Output",
+ CellID->1013234712]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22941, 534, 28, 0, 149, "SnapshotsSection"],
+Cell[22972, 536, 5752, 115, 413, "Output",
+ CellID->587201596],
+Cell[28727, 653, 5754, 115, 417, "Output",
+ CellID->1409866007],
+Cell[34484, 770, 5658, 114, 411, "Output",
+ CellID->72322195]
+}, Open  ]],
+Cell[40157, 887, 26, 0, 357, "DetailsSection"],
+Cell[CellGroupData[{
+Cell[40208, 891, 37, 0, 119, "ControlSuggestionsSection"],
+Cell[40248, 893, 353, 9, 29, "ControlSuggestions",
+ CellTags->"ResizeImages"],
+Cell[40604, 904, 678, 16, 29, "ControlSuggestions",
+ CellTags->"RotateAndZoomIn3D"],
+Cell[41285, 922, 340, 11, 29, "ControlSuggestions",
+ CellTags->"DragLocators"],
+Cell[41628, 935, 637, 15, 29, "ControlSuggestions",
+ CellTags->"CreateAndDeleteLocators"],
+Cell[42268, 952, 844, 21, 29, "ControlSuggestions",
+ CellTags->"SliderZoom"],
+Cell[43115, 975, 395, 10, 29, "ControlSuggestions",
+ CellTags->"GamepadControls"],
+Cell[43513, 987, 1464, 31, 29, "ControlSuggestions",
+ CellTags->"AutomaticAnimation"],
+Cell[44980, 1020, 908, 21, 29, "ControlSuggestions",
+ CellTags->"BookmarkAnimation"]
+}, Open  ]],
+Cell[45903, 1044, 30, 0, 165, "SearchTermsSection"],
+Cell[CellGroupData[{
+Cell[45958, 1048, 31, 0, 137, "RelatedLinksSection"],
+Cell[45992, 1050, 421, 11, 23, "RelatedLinks",
+ CellID->1789843910],
+Cell[46416, 1063, 937, 23, 24, "RelatedLinks",
+ CellID->1762906003]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[47390, 1091, 25, 0, 149, "AuthorSection"],
+Cell[47418, 1093, 236, 3, 23, "Author"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
